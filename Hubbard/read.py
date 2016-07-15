@@ -7,13 +7,13 @@ L=200
 lx=4 #=int(raw_input('lx'))
 V4d=lx*lx*lx*L # 4d volume
 
-training=5000  #=int(raw_input('training'))
+training=10000  #=int(raw_input('training'))
 bsize=400 #=int(raw_input('bsize'))
 
 # how does the data look like
 Ntemp=41 #int(raw_input('Ntemp'))   #20 # number of different temperatures used in the simulation
-samples_per_T=500  #int(raw_input('samples_per_T'))  #250 # number of samples per temperature value
-samples_per_T_test=500 # int(raw_input('samples_per_T'))  #250 # number of samples per temperature value
+samples_per_T=100  #int(raw_input('samples_per_T'))  #250 # number of samples per temperature value
+samples_per_T_test=100 # int(raw_input('samples_per_T'))  #250 # number of samples per temperature value
 
 
 numberlabels=2
@@ -108,26 +108,31 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 sess = tf.Session()
 sess.run(tf.initialize_all_variables())
 
-for i in range(training):
-  batch = mnist.train.next_batch(bsize)
-  if i%100 == 0:
-    train_accuracy = sess.run(accuracy,feed_dict={
-        x:batch[0], y_: batch[1], keep_prob: 1.0})
-    print "step %d, training accuracy %g"%(i, train_accuracy)
-    print "test accuracy %g"%sess.run(accuracy, feed_dict={
-    x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}) 
-    #print "test Trick accuracy %g"%sess.run(accuracy, feed_dict={
-    #x: mnist.test_Trick.images, y_: mnist.test_Trick.labels, keep_prob: 1.0})  
-#  train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
-  sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
-print "test accuracy %g"%sess.run(accuracy, feed_dict={
-    x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0})
+#for i in range(training):
+#  batch = mnist.train.next_batch(bsize)
+#  if i%100 == 0:
+#    train_accuracy = sess.run(accuracy,feed_dict={
+#        x:batch[0], y_: batch[1], keep_prob: 1.0})
+#    print "step %d, training accuracy %g"%(i, train_accuracy)
+#    print "test accuracy %g"%sess.run(accuracy, feed_dict={
+#    x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}) 
+#    #print "test Trick accuracy %g"%sess.run(accuracy, feed_dict={
+#    #x: mnist.test_Trick.images, y_: mnist.test_Trick.labels, keep_prob: 1.0})  
+##  train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+#  sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+#print "test accuracy %g"%sess.run(accuracy, feed_dict={
+#    x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0})
 
 
 
+#saver = tf.train.Saver([W_conv1, b_conv1, W_fc1,b_fc1,W_fc2,b_fc2])
+#save_path = saver.save(sess, "./model.ckpt")
+#print "Model saved in file: ", save_path
+
+# Add ops to save and restore all the variables.
 saver = tf.train.Saver([W_conv1, b_conv1, W_fc1,b_fc1,W_fc2,b_fc2])
-save_path = saver.save(sess, "./model.ckpt")
-print "Model saved in file: ", save_path
+saver.restore(sess, "./model.ckpt")
+print("Model restored.")
 
 #producing data to get the plots we like
 
@@ -144,8 +149,8 @@ for i in range(Ntemp):
         #print ii, res
         ii=ii+1
   av=av/samples_per_T_test
-  f.write(str(i)+' '+str(av[0,0])+' '+str(av[0,1])+"\n") 
-f.close() 
+  f.write(str(i)+' '+str(av[0,0])+' '+str(av[0,1])+"\n")
+f.close()
 
 
 f = open('acc.dat', 'w')
@@ -157,7 +162,6 @@ for ii in range(Ntemp):
         x:batch[0], y_: batch[1], keep_prob: 1.0})
   f.write(str(ii)+' '+str(train_accuracy)+"\n")
 f.close()
-  
 
 #producing data to get the plots we like
 
